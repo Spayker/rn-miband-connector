@@ -1,0 +1,25 @@
+.container {
+    flex: 1;
+    flex-direction: column;
+    margin: 5px;
+}
+
+.package {
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 5px;
+}
+
+.sensorField {
+    font-size: 30;
+}
+
+.buttonContainer {
+    flex: 2;
+    justify-content: space-evenly;
+}
+
+.button {
+    padding-top: 5px;
+}
