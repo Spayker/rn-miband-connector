@@ -54,13 +54,11 @@ export default class Dashboard extends React.Component {
                     <Text style={styles.sensorField}>{this.state.deviceBondLevel}</Text>
                 </View>
 
-
                 <View style={styles.buttonContainer}>
-                    <Button style={styles.button} onPress={this.searchBluetoothDevices} title='Link With MiBand' /> 
-
-                    <Button style={styles.button} onPress={this.activateHeartRateCalculation} title='Get Heart Rate' /> 
+                    <Button onPress={this.searchBluetoothDevices} title='Link With MiBand' /> 
+                    <View style={styles.spacing}/>
+                    <Button onPress={this.activateHeartRateCalculation} title='Get Heart Rate' /> 
                 </View>
-
             </View>
         );
     }

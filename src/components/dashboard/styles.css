@@ -1,14 +1,15 @@
 .container {
     flex: 1;
     flex-direction: column;
-    margin: 5px;
+    align-content: center;
+    padding: 5%;
+    padding-top: 50%;
 }
 
 .package {
-    flex: 1;
     flex-direction: row;
     justify-content: space-between;
-    margin: 5px;
+    margin: 10px;
 }
 
 .sensorField {
@@ -16,10 +17,10 @@
 }
 
 .buttonContainer {
-    flex: 2;
-    justify-content: space-evenly;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
-.button {
-    padding-top: 5px;
+.spacing{
+    padding: 10px;
 }
