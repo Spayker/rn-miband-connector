@@ -31,7 +31,8 @@ import static com.sbp.common.ModuleStorage.getModuleStorage;
 
 /**
  *  Declares main set of methods which will be used by react UI during data fetching procedure.
- *  Last one includes only device connection.
+ *  Last one includes only device connection. Make sure your miband device has
+ *  "Allow 3-rd party connect" option ON
  * @author  Spayker
  * @version 1.0
  * @since   06/01/2019

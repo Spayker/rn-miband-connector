@@ -35,6 +35,10 @@ public class AppBluetoothGattCallback extends BluetoothGattCallback {
     private SharedPreferences sharedPreferences;
     private HeartBeatMeasurer heartBeatMeasurer;
 
+    private byte[] authCharValue =
+            new byte[]{0x01, 0x8, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
+                        0x37, 0x38, 0x39, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45};
+
     AppBluetoothGattCallback(SharedPreferences sharedPreferences,
                              HeartBeatMeasurer heartBeatMeasurer){
         this.sharedPreferences = sharedPreferences;
@@ -69,20 +73,21 @@ public class AppBluetoothGattCallback extends BluetoothGattCallback {
         }
     }
 
-
     private void authoriseMiBand() {
         BluetoothGattService service = bluetoothGatt.getService(UUIDs.CUSTOM_SERVICE_FEE1);
 
-        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUIDs.CUSTOM_SERVICE_AUTH_CHARACTERISTIC);
+        BluetoothGattCharacteristic characteristic =
+                service.getCharacteristic(UUIDs.CUSTOM_SERVICE_AUTH_CHARACTERISTIC);
         bluetoothGatt.setCharacteristicNotification(characteristic, true);
         for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
             if (descriptor.getUuid().equals(UUIDs.CUSTOM_SERVICE_AUTH_DESCRIPTOR)) {
-                Log.d("INFO", "Found NOTIFICATION BluetoothGattDescriptor: " + descriptor.getUuid().toString());
+                Log.d("INFO", "Found NOTIFICATION BluetoothGattDescriptor: " +
+                        descriptor.getUuid().toString());
                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             }
         }
 
-        characteristic.setValue(new byte[]{0x01, 0x8, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45});
+        characteristic.setValue(authCharValue);
         bluetoothGatt.writeCharacteristic(characteristic);
     }
 
