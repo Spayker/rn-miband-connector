@@ -2,6 +2,14 @@ package com.sbp.metric;
 
 import java.util.UUID;
 
+/**
+ *  Declares main set of charasteristics for communication between miband device and android
+ *  application. Contains codes for device paring, heart measurement
+ *
+ * @author  Spayker
+ * @version 1.0
+ * @since   06/01/2019
+ */
 public class UUIDs {
 
     //Custom service 3 components

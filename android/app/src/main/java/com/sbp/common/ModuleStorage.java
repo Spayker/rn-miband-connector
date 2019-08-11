@@ -4,6 +4,13 @@ import com.facebook.react.shell.MainReactPackage;
 import com.sbp.bluetooth.DeviceConnectorPackage;
 import com.sbp.metric.HeartBeatMeasurerPackage;
 
+/**
+ *  An utility class that registers native modules in app
+ *
+ * @author  Spayker
+ * @version 1.0
+ * @since   06/01/2019
+ */
 public class ModuleStorage {
 
     private static ModuleStorage instance;

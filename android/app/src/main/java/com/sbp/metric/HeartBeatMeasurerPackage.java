@@ -9,22 +9,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
+/**
+ *  Inits package responsible for HB measurement
+ *
+ * @author  Spayker
+ * @version 1.0
+ * @since   06/01/2019
+ */
 public class HeartBeatMeasurerPackage implements ReactPackage {
 
     private HeartBeatMeasurer heartBeatMeasurer;
 
+    @Nonnull
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    public List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext) {
         return Collections.emptyList();
     }
 
+    @Nonnull
     @Override
-    public List<NativeModule> createNativeModules(
-            ReactApplicationContext reactContext) {
+    public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-
         modules.add(initHeartBeatMeasurer(reactContext));
-
         return modules;
     }
 

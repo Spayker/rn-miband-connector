@@ -13,6 +13,13 @@ import java.util.List;
 
 import static com.sbp.common.ModuleStorage.getModuleStorage;
 
+/**
+ *  Inits ReactNativeHost instance including registration of main native packages
+ *
+ * @author  Spayker
+ * @version 1.0
+ * @since   06/01/2019
+ */
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {

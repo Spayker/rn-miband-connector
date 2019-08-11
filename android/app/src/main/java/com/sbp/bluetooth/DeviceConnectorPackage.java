@@ -9,6 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Inits package responsible for miband device connector.
+ *
+ * @author  Spayker
+ * @version 1.0
+ * @since   06/01/2019
+ */
 public class DeviceConnectorPackage implements ReactPackage {
 
     private DeviceConnector deviceConnector;

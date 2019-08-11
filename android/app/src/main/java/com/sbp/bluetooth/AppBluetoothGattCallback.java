@@ -22,6 +22,13 @@ import static com.sbp.common.ModuleStorage.getModuleStorage;
 import static com.sbp.metric.UUIDs.CUSTOM_SERVICE_AUTH_CHARACTERISTIC_STRING;
 import static com.sbp.metric.UUIDs.HEART_RATE_MEASUREMENT_CHARACTERISTIC_STRING;
 
+/**
+ * Declares logic for connection establishment between android app and miband by Bluetooth protocol
+ *
+ * @author  Spayker
+ * @version 1.0
+ * @since   06/01/2019
+ */
 public class AppBluetoothGattCallback extends BluetoothGattCallback {
 
     private BluetoothGatt bluetoothGatt;
@@ -62,7 +69,7 @@ public class AppBluetoothGattCallback extends BluetoothGattCallback {
         }
     }
 
-    /*------Methods to send requests to the device------*/
+
     private void authoriseMiBand() {
         BluetoothGattService service = bluetoothGatt.getService(UUIDs.CUSTOM_SERVICE_FEE1);
 
