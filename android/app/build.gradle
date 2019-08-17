@@ -189,7 +189,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.facebook.react:react-native:0.60.4"  // From node_modules
+    implementation "com.facebook.react:react-native:0.60.5"  // From node_modules
     implementation 'org.apache.commons:commons-lang3:3.6'
 
     if (enableHermes) {
