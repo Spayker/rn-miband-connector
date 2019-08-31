@@ -1,27 +1,39 @@
 import React from 'react'
-import {Text, View, Button, NativeModules} from 'react-native';
-import styles from "./styles.css";
+import {Text, View, Button, NativeModules, TouchableOpacity} from 'react-native';
+import styles from "./styles.jsx";
 
 export default class Dashboard extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            foundDeviceName: 'None',
             deviceBondLevel: 0,
-            heartBeatRate: 0
+            heartBeatRate: 0,
+            isConnectedWithMiBand: false,
+            isHeartRateCalculating: false,
+            bluetoothSearchInterval: null,
+            hrRateInterval: null
         };
     }
 
     searchBluetoothDevices = () => {
-        NativeModules.DeviceConnector.enableBTAndDiscover( (error, deviceBondLevel)=>{
+        this.setState({ isConnectedWithMiBand: true})
+        NativeModules.DeviceConnector.enableBTAndDiscover( (error, deviceBondLevel) => {
             this.setState({ deviceBondLevel: deviceBondLevel});
         })
-        setInterval(this.getDeviceBondLevel, 2000)
+        this.setState({ bluetoothSearchInterval: setInterval(this.getDeviceBondLevel, 2000) })
+    }
+
+    unlinkBluetoothDevice = () => {
+        this.setState({ deviceBondLevel: 0});
+        this.setState({ isConnectedWithMiBand: false})
+        clearInterval(this.state.bluetoothSearchInterval);
+        this.setState({ bluetoothSearchInterval: null});
+        this.deactivateHeartRateCalculation();
     }
 
     getDeviceBondLevel = () => {
-        NativeModules.DeviceConnector.getDeviceBondLevel( (error, deviceBondLevel)=>{
+        NativeModules.DeviceConnector.getDeviceBondLevel( (error, deviceBondLevel) => {
             this.setState({ deviceBondLevel: deviceBondLevel}, () => {
                 this.getDeviceBondLevel
             });
@@ -29,14 +41,22 @@ export default class Dashboard extends React.Component {
     }
 
     activateHeartRateCalculation = () => {
-        NativeModules.HeartBeatMeasurer.startHeartRateCalculation( (error, heartBeatRate)=>{
+        NativeModules.HeartBeatMeasurer.startHeartRateCalculation( (error, heartBeatRate) => {
             this.setState({ heartBeatRate: heartBeatRate});
+            this.setState({ isHeartRateCalculating: true});
         })
-        setInterval(this.getHeartRate, 2000)
+        this.setState({ hrRateInterval: setInterval(this.getHeartRate, 2000)})
+    }
+
+    deactivateHeartRateCalculation = () => {
+        this.setState({ heartBeatRate: 0});
+        clearInterval(this.state.hrRateInterval);
+        this.setState({ hrRateInterval: null});
+        this.setState({ isHeartRateCalculating: false});
     }
 
     getHeartRate = () => {
-        NativeModules.HeartBeatMeasurer.getHeartRate( (error, heartBeatRate)=>{
+        NativeModules.HeartBeatMeasurer.getHeartRate( (error, heartBeatRate) => {
             this.setState({ heartBeatRate: heartBeatRate});
         })
     }
@@ -55,9 +75,35 @@ export default class Dashboard extends React.Component {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <Button onPress={this.searchBluetoothDevices} title='Link With MiBand' /> 
+
+                    {this.state.isConnectedWithMiBand ? (
+                        <TouchableOpacity style={styles.buttonEnabled} onPress={this.unlinkBluetoothDevice}>
+                            <Text style={styles.buttonText}>Unlink With MiBand</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity style={styles.buttonEnabled} onPress={this.searchBluetoothDevices}>
+                            <Text style={styles.buttonText}>Link With MiBand</Text>
+                        </TouchableOpacity>
+                    )}
+
                     <View style={styles.spacing}/>
-                    <Button onPress={this.activateHeartRateCalculation} title='Get Heart Rate' /> 
+
+                    {this.state.isConnectedWithMiBand ? (
+                        this.state.isHeartRateCalculating ? (
+                            <TouchableOpacity style={styles.buttonEnabled} onPress={this.deactivateHeartRateCalculation} disabled={false}>
+                                <Text style={styles.buttonText}>Stop HR Calculation</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity style={styles.buttonEnabled} onPress={this.activateHeartRateCalculation} disabled={false}>
+                                <Text style={styles.buttonText}>Start HR Calculation</Text>
+                            </TouchableOpacity>
+                        )
+                    ) : (
+                        <TouchableOpacity style={styles.buttonDisabled} onPress={this.activateHeartRateCalculation} disabled={true}>
+                            <Text style={styles.buttonText}>Start HR Calculation</Text>
+                        </TouchableOpacity>
+                    )}
+                        
                 </View>
             </View>
         );
