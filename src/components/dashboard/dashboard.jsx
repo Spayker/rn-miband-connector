@@ -1,5 +1,5 @@
 import React from 'react'
-import {Text, View, Button, NativeModules, TouchableOpacity} from 'react-native';
+import {Text, View, NativeModules, TouchableOpacity} from 'react-native';
 import styles from "./styles.jsx";
 
 export default class Dashboard extends React.Component {
@@ -25,11 +25,14 @@ export default class Dashboard extends React.Component {
     }
 
     unlinkBluetoothDevice = () => {
-        this.setState({ deviceBondLevel: 0});
-        this.setState({ isConnectedWithMiBand: false})
+        this.deactivateHeartRateCalculation();
+        NativeModules.DeviceConnector.disconnectDevice( (error, deviceBondLevel) => {
+            this.setState({ deviceBondLevel: deviceBondLevel});
+        })
         clearInterval(this.state.bluetoothSearchInterval);
         this.setState({ bluetoothSearchInterval: null});
-        this.deactivateHeartRateCalculation();
+        this.setState({ deviceBondLevel: 0});
+        this.setState({ isConnectedWithMiBand: false})
     }
 
     getDeviceBondLevel = () => {
@@ -42,17 +45,19 @@ export default class Dashboard extends React.Component {
 
     activateHeartRateCalculation = () => {
         NativeModules.HeartBeatMeasurer.startHeartRateCalculation( (error, heartBeatRate) => {
-            this.setState({ heartBeatRate: heartBeatRate});
             this.setState({ isHeartRateCalculating: true});
+            this.setState({ heartBeatRate: heartBeatRate});
         })
         this.setState({ hrRateInterval: setInterval(this.getHeartRate, 2000)})
     }
 
     deactivateHeartRateCalculation = () => {
-        this.setState({ heartBeatRate: 0});
-        clearInterval(this.state.hrRateInterval);
-        this.setState({ hrRateInterval: null});
-        this.setState({ isHeartRateCalculating: false});
+        NativeModules.HeartBeatMeasurer.stopHeartRateCalculation( (error, heartBeatRate) => {
+            this.setState({ isHeartRateCalculating: false});
+            this.setState({ hrRateInterval: null});
+            this.setState({ heartBeatRate: 0});
+            clearInterval(this.state.hrRateInterval);
+        })
     }
 
     getHeartRate = () => {

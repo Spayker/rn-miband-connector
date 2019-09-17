@@ -78,6 +78,7 @@ public class AppBluetoothGattCallback extends BluetoothGattCallback {
 
         BluetoothGattCharacteristic characteristic =
                 service.getCharacteristic(UUIDs.CUSTOM_SERVICE_AUTH_CHARACTERISTIC);
+
         bluetoothGatt.setCharacteristicNotification(characteristic, true);
         for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
             if (descriptor.getUuid().equals(UUIDs.CUSTOM_SERVICE_AUTH_DESCRIPTOR)) {
@@ -101,7 +102,7 @@ public class AppBluetoothGattCallback extends BluetoothGattCallback {
         heartBeatMeasurer = getModuleStorage().getHeartBeatMeasurerPackage().getHeartBeatMeasurer();
         switch (characteristic.getUuid().toString()) {
             case CUSTOM_SERVICE_AUTH_CHARACTERISTIC_STRING:
-                executeAuthorisationSequence(characteristic);
+                //executeAuthorisationSequence(characteristic);
                 break;
             case HEART_RATE_MEASUREMENT_CHARACTERISTIC_STRING:
                 heartBeatMeasurer.handleHeartRateData(characteristic);
@@ -119,7 +120,7 @@ public class AppBluetoothGattCallback extends BluetoothGattCallback {
                 byte[] tmpValue = Arrays.copyOfRange(value, 3, 19);
                 Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
 
-                SecretKeySpec key = new SecretKeySpec(new byte[]{0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45}, "AES");
+                SecretKeySpec key = new SecretKeySpec(authCharValue, "AES");
 
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 byte[] bytes = cipher.doFinal(tmpValue);

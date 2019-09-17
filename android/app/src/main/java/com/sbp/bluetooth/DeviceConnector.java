@@ -127,7 +127,6 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
      * @param successCallback - a Callback instance that will be needed in the end of discovering
      *                        process to send back a result of work.
      */
-    @ReactMethod
     void connectDevice(Callback successCallback) {
         if (bluetoothDevice.getBondState() == BluetoothDevice.BOND_NONE) {
             bluetoothDevice.createBond();
@@ -147,6 +146,15 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
                 bluetoothDevice.getAddress());
         editor.apply();
 
+        getDeviceBondLevel(successCallback);
+    }
+
+    @ReactMethod
+    void disconnectDevice(Callback successCallback) {
+        bluetoothGatt.disconnect();
+        bluetoothGatt = null;
+        bluetoothDevice = null;
+        bluetoothAdapter = null;
         getDeviceBondLevel(successCallback);
     }
 
