@@ -2,8 +2,8 @@ package com.sbp.metric;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.util.Log;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,6 +15,13 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
+import static com.sbp.common.UUIDs.CHAR_HEART_RATE_CONTROL;
+import static com.sbp.common.UUIDs.CHAR_HEART_RATE_MEASURE;
+import static com.sbp.common.UUIDs.CHAR_SENSOR;
+import static com.sbp.common.UUIDs.NOTIFICATION_DESC;
+import static com.sbp.common.UUIDs.SERVICE_HEART_RATE;
+import static com.sbp.common.UUIDs.SERVICE1;
+import static com.sbp.common.UUIDs.SERVICE2;
 import static java.lang.Thread.sleep;
 
 /**
@@ -26,13 +33,13 @@ import static java.lang.Thread.sleep;
  */
 public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
 
-    private boolean shallStopHRCalculation;
-
-    /**
-     * Gatt Service contains a collection of BluetoothGattCharacteristic,
-     * as well as referenced services.
-     */
-    private BluetoothGattService heartRateService;
+    private BluetoothGattService heartService;
+    private BluetoothGattCharacteristic hrCtrlChar;
+    private BluetoothGattCharacteristic hrMeasureChar;
+    private BluetoothGattDescriptor hrDescChar;
+    private BluetoothGattCharacteristic sensorChar;
+    private BluetoothGattService service1;
+    private BluetoothGattService service2;
 
     /**
      * Public API for the Bluetooth GATT Profile.
@@ -42,28 +49,28 @@ public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
      * BluetoothDevice#connectGatt to get a instance of this class. GATT capable devices can be
      * discovered using the Bluetooth device discovery or BLE scan process.
      */
-    private BluetoothGatt bluetoothGatt;
-
-    /**
-     * A GATT characteristic is a basic data element used to construct a GATT service,
-     * BluetoothGattService. The characteristic contains a value as well as additional
-     * information and optional GATT descriptors, BluetoothGattDescriptor.
-     */
-    private BluetoothGattCharacteristic heartRateControlPointCharacteristic;
+    private BluetoothGatt btGatt;
 
     /**
      * keeps current heart beat value taken from miband device
      */
     private String heartRateValue = "0";
 
-    /**
-     * used to get
-     */
-    private final Object object = new Object();
-    private final int DEVICE_PAUSE_COMMUNICATION_IN_MS = 500;
-
     HeartBeatMeasurer(ReactApplicationContext reactContext) {
         super(reactContext);
+    }
+
+    public void initHrChars(BluetoothGatt gatt){
+        this.btGatt = gatt;
+        service1 = btGatt.getService(UUID.fromString(SERVICE1));
+        service2 = btGatt.getService(UUID.fromString(SERVICE2));
+        heartService = btGatt.getService(UUID.fromString(SERVICE_HEART_RATE));
+        hrCtrlChar = heartService.getCharacteristic(UUID.fromString(CHAR_HEART_RATE_CONTROL));
+        hrMeasureChar = heartService.getCharacteristic(UUID.fromString(CHAR_HEART_RATE_MEASURE));
+        hrDescChar = hrMeasureChar.getDescriptor(UUID.fromString(NOTIFICATION_DESC));
+        sensorChar = service1.getCharacteristic(UUID.fromString(CHAR_SENSOR));
+        btGatt.setCharacteristicNotification(hrCtrlChar, true);
+        btGatt.setCharacteristicNotification(hrMeasureChar, true);
     }
 
     /**
@@ -72,29 +79,8 @@ public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
      *                       to construct a GATT service
      */
     public void handleHeartRateData(final BluetoothGattCharacteristic characteristic) {
-
-        Log.i("Heart", String.valueOf(characteristic.getValue()[1]));
-        runOnUiThread(() -> {
-            if(shallStopHRCalculation){
-                heartRateValue = "0";
-            } else {
-                BluetoothGattCharacteristic heartRateMeasurementCharacteristic
-                        = heartRateService.getCharacteristic(
-                        UUID.fromString(UUIDs.HEART_RATE_MEASUREMENT_CHARACTERISTIC_STRING));
-
-                bluetoothGatt.readCharacteristic(heartRateMeasurementCharacteristic);
-                synchronized (object) {
-                    try {
-                        object.wait(DEVICE_PAUSE_COMMUNICATION_IN_MS);
-                        heartRateControlPointCharacteristic.setValue(new byte[]{0x16});
-                        bluetoothGatt.writeCharacteristic(heartRateControlPointCharacteristic);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                heartRateValue = String.valueOf(characteristic.getValue()[1]);
-            }
-        });
+        byte currentHrValue = characteristic.getValue()[1];
+        heartRateValue = String.valueOf(currentHrValue);
     }
 
     /**
@@ -103,37 +89,22 @@ public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     private void startHeartRateCalculation(Callback successCallback) {
-        shallStopHRCalculation = false;
-        heartRateService = bluetoothGatt.getService(UUIDs.HEART_RATE_SERVICE);
-        UUID heartRateCharacteristicCode = UUID.fromString(UUIDs.HEART_RATE_MEASUREMENT_CHARACTERISTIC_STRING);
+        sensorChar.setValue(new byte[]{0x01, 0x03, 0x19});
+        System.out.println("sensorChar: " + btGatt.writeCharacteristic(sensorChar));
 
-        if(heartRateService != null){
-            BluetoothGattCharacteristic heartRateCharacteristic = heartRateService.getCharacteristic(heartRateCharacteristicCode);
-            heartRateControlPointCharacteristic = heartRateService.getCharacteristic(UUIDs.HEART_RATE_CONTROL_POINT_CHARACTERISTIC);
+        hrDescChar.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+        System.out.println("hrDescChar: " + btGatt.writeDescriptor(hrDescChar));
+        makePause();
 
-            bluetoothGatt.setCharacteristicNotification(heartRateCharacteristic, true);
+        hrCtrlChar.setValue(new byte[]{0x15, 0x01, 0x01});
+        System.out.println("hrCtrlChar: " + btGatt.writeCharacteristic(hrCtrlChar));
 
-            heartRateControlPointCharacteristic.setValue(new byte[]{0x15, 0x02, 0x00});
-            bluetoothGatt.writeCharacteristic(heartRateControlPointCharacteristic);
-
-            heartRateControlPointCharacteristic.setValue(new byte[]{0x15, 0x01, 0x00});
-            bluetoothGatt.writeCharacteristic(heartRateControlPointCharacteristic);
-            makePause();
-
-            heartRateControlPointCharacteristic.setValue(new byte[]{0x01, 0x00});
-            bluetoothGatt.writeCharacteristic(heartRateControlPointCharacteristic);
-            makePause();
-
-            heartRateControlPointCharacteristic.setValue(new byte[]{0x15, 0x01, 0x01});
-            bluetoothGatt.writeCharacteristic(heartRateControlPointCharacteristic);
-            getHeartRate(successCallback);
-        }
+        successCallback.invoke(null, heartRateValue);
     }
 
     @ReactMethod
     private void stopHeartRateCalculation(Callback successCallback) {
-        shallStopHRCalculation = true;
-        getHeartRate(successCallback);
+        successCallback.invoke(null, heartRateValue);
     }
 
     /**
@@ -141,7 +112,11 @@ public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
      * @param successCallback - a Callback instance that contains result of native code execution
      */
     @ReactMethod
-    private void getHeartRate(Callback successCallback) {
+    private void getHeartRate(String currentHeartBeat, Callback successCallback) {
+        if(Integer.valueOf(heartRateValue).equals(Integer.valueOf(currentHeartBeat))){
+            hrCtrlChar.setValue(new byte[]{0x16});
+            btGatt.writeCharacteristic(hrCtrlChar);
+        }
         successCallback.invoke(null, heartRateValue);
     }
 
@@ -152,7 +127,8 @@ public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
      */
     private void makePause(){
         try {
-            sleep(DEVICE_PAUSE_COMMUNICATION_IN_MS);
+            int CHAR_WRITE_PAUSE_COMMUNICATION_IN_MS = 200;
+            sleep(CHAR_WRITE_PAUSE_COMMUNICATION_IN_MS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -163,7 +139,7 @@ public class HeartBeatMeasurer extends ReactContextBaseJavaModule {
      * @param bluetoothGatt instance to be re-initialized
      */
     public void updateBluetoothConfig(BluetoothGatt bluetoothGatt){
-        this.bluetoothGatt = bluetoothGatt;
+        this.btGatt = bluetoothGatt;
     }
 
 

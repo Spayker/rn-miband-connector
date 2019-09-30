@@ -44,7 +44,7 @@ export default class Dashboard extends React.Component {
     }
 
     activateHeartRateCalculation = () => {
-        NativeModules.HeartBeatMeasurer.startHeartRateCalculation( (error, heartBeatRate) => {
+        NativeModules.HeartBeatMeasurer.startHeartRateCalculation((error, heartBeatRate) => {
             this.setState({ isHeartRateCalculating: true});
             this.setState({ heartBeatRate: heartBeatRate});
         })
@@ -61,7 +61,7 @@ export default class Dashboard extends React.Component {
     }
 
     getHeartRate = () => {
-        NativeModules.HeartBeatMeasurer.getHeartRate( (error, heartBeatRate) => {
+        NativeModules.HeartBeatMeasurer.getHeartRate( this.state.heartBeatRate, (error, heartBeatRate) => {
             this.setState({ heartBeatRate: heartBeatRate});
         })
     }
