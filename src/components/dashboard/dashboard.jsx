@@ -9,6 +9,8 @@ export default class Dashboard extends React.Component {
         this.state = {
             deviceBondLevel: 0,
             heartBeatRate: 0,
+            steps: 0,
+            battery: 0,
             isConnectedWithMiBand: false,
             isHeartRateCalculating: false,
             bluetoothSearchInterval: null,
@@ -19,50 +21,53 @@ export default class Dashboard extends React.Component {
     searchBluetoothDevices = () => {
         this.setState({ isConnectedWithMiBand: true})
         NativeModules.DeviceConnector.enableBTAndDiscover( (error, deviceBondLevel) => {
-            this.setState({ deviceBondLevel: deviceBondLevel});
+            this.setState({ deviceBondLevel: deviceBondLevel})
         })
-        this.setState({ bluetoothSearchInterval: setInterval(this.getDeviceBondLevel, 2000) })
+        this.setState({ bluetoothSearchInterval: setInterval(this.getDeviceInfo, 5000) })
     }
 
     unlinkBluetoothDevice = () => {
-        this.deactivateHeartRateCalculation();
+        this.deactivateHeartRateCalculation()
         NativeModules.DeviceConnector.disconnectDevice( (error, deviceBondLevel) => {
             this.setState({ deviceBondLevel: deviceBondLevel});
         })
-        clearInterval(this.state.bluetoothSearchInterval);
-        this.setState({ bluetoothSearchInterval: null});
-        this.setState({ deviceBondLevel: 0});
+        clearInterval(this.state.bluetoothSearchInterval)
+        this.setState({ bluetoothSearchInterval: null})
+        this.setState({ deviceBondLevel: 0})
         this.setState({ isConnectedWithMiBand: false})
     }
 
-    getDeviceBondLevel = () => {
+    getDeviceInfo = () => {
         NativeModules.DeviceConnector.getDeviceBondLevel( (error, deviceBondLevel) => {
             this.setState({ deviceBondLevel: deviceBondLevel}, () => {
                 this.getDeviceBondLevel
             });
         })
+        NativeModules.InfoReceiver.getInfo((error, steps, battery) => {
+            this.setState({ steps: steps})
+            this.setState({ battery: battery})
+        })
     }
 
     activateHeartRateCalculation = () => {
-        NativeModules.HeartBeatMeasurer.startHeartRateCalculation((error, heartBeatRate) => {
-            this.setState({ isHeartRateCalculating: true});
-            this.setState({ heartBeatRate: heartBeatRate});
+        NativeModules.HeartBeatMeasurer.startHrCalculation((error, heartBeatRate) => {
+            this.setState({ isHeartRateCalculating: true})
+            this.setState({ heartBeatRate: heartBeatRate})
         })
-        this.setState({ hrRateInterval: setInterval(this.getHeartRate, 2000)})
+        this.setState({ hrRateInterval: setInterval(this.getHeartRate, 5000)})
     }
 
     deactivateHeartRateCalculation = () => {
-        NativeModules.HeartBeatMeasurer.stopHeartRateCalculation( (error, heartBeatRate) => {
-            this.setState({ isHeartRateCalculating: false});
-            this.setState({ hrRateInterval: null});
-            this.setState({ heartBeatRate: 0});
-            clearInterval(this.state.hrRateInterval);
-        })
+        NativeModules.HeartBeatMeasurer.stopHrCalculation()
+        this.setState({ isHeartRateCalculating: false})
+        this.setState({ hrRateInterval: null})
+        this.setState({ heartBeatRate: 0})
+        clearInterval(this.state.hrRateInterval)
     }
 
     getHeartRate = () => {
         NativeModules.HeartBeatMeasurer.getHeartRate( this.state.heartBeatRate, (error, heartBeatRate) => {
-            this.setState({ heartBeatRate: heartBeatRate});
+            this.setState({ heartBeatRate: heartBeatRate})
         })
     }
 
@@ -75,7 +80,17 @@ export default class Dashboard extends React.Component {
                 </View>
 
                 <View style={styles.package}>
-                    <Text style={styles.sensorField}>Device BL:</Text>
+                    <Text style={styles.sensorField}>Steps:</Text>
+                    <Text style={styles.sensorField}>{this.state.steps}</Text>
+                </View>
+
+                <View style={styles.package}>
+                    <Text style={styles.sensorField}>Battery:</Text>
+                    <Text style={styles.sensorField}>{this.state.battery + ' %'}</Text>
+                </View>
+
+                <View style={styles.package}>
+                    <Text style={styles.sensorField}>Device Bond Level:</Text>
                     <Text style={styles.sensorField}>{this.state.deviceBondLevel}</Text>
                 </View>
 
@@ -96,19 +111,18 @@ export default class Dashboard extends React.Component {
                     {this.state.isConnectedWithMiBand ? (
                         this.state.isHeartRateCalculating ? (
                             <TouchableOpacity style={styles.buttonEnabled} onPress={this.deactivateHeartRateCalculation} disabled={false}>
-                                <Text style={styles.buttonText}>Stop HR Calculation</Text>
+                                <Text style={styles.buttonText}>Stop HR Measurement</Text>
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity style={styles.buttonEnabled} onPress={this.activateHeartRateCalculation} disabled={false}>
-                                <Text style={styles.buttonText}>Start HR Calculation</Text>
+                                <Text style={styles.buttonText}>Start HR Measurement</Text>
                             </TouchableOpacity>
                         )
                     ) : (
-                        <TouchableOpacity style={styles.buttonDisabled} onPress={this.activateHeartRateCalculation} disabled={true}>
-                            <Text style={styles.buttonText}>Start HR Calculation</Text>
+                        <TouchableOpacity style={styles.buttonDisabled} disabled={true}>
+                            <Text style={styles.buttonText}>Start HR Measurement</Text>
                         </TouchableOpacity>
                     )}
-                        
                 </View>
             </View>
         );

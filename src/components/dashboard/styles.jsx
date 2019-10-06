@@ -11,17 +11,17 @@ export default styles = StyleSheet.create({
     package:{
         flexDirection: "row",
         justifyContent: "space-between",
-        margin: 10
+        margin: 5
     },
     sensorField: {
-        fontSize: 30
+        fontSize: 20
     },
     buttonContainer: {
         flexDirection: "column",
         justifyContent: "space-around"
     },
     spacing: {
-        padding: 10
+        padding: 5
     },
     buttonEnabled: {
         height: 35,
@@ -50,9 +50,3 @@ export default styles = StyleSheet.create({
         paddingTop: 7
     }
 });
-
-
-
-
-
-

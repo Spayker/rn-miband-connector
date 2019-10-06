@@ -34,7 +34,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.asList(
               appModuleStorage.getMainReactPackage(),
               appModuleStorage.getDeviceConnectorPackage(),
-              appModuleStorage.getHeartBeatMeasurerPackage()
+              appModuleStorage.getHeartBeatMeasurerPackage(),
+              appModuleStorage.getInfoPackage()
       );
     }
 

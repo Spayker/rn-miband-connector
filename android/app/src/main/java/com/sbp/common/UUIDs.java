@@ -1,9 +1,7 @@
 package com.sbp.common;
 
-import java.util.UUID;
-
 /**
- *  Declares main set of charasteristics for communication between miband device and android
+ *  Declares main set of chars for communication between miband device and android
  *  application. Contains codes for device paring, heart measurement
  *
  * @author  Spayker
@@ -12,7 +10,8 @@ import java.util.UUID;
  */
 public interface UUIDs {
 
-    String BASE = "0000%s-0000-1000-8000-00805f9b34fb";
+    byte[] AUTH_CHAR_KEY = new byte[]{(byte) 0xf5, (byte) 0xd2, 0x29, (byte) 0x87, 0x65,
+            0x0a, 0x1d, (byte) 0x82, 0x05, (byte) 0xab, (byte) 0x82, (byte) 0xbe, (byte) 0xb9, 0x38, 0x59, (byte) 0xcf};
 
     String SERVICE1 = "0000fee0-0000-1000-8000-00805f9b34fb";
     String SERVICE2 = "0000fee1-0000-1000-8000-00805f9b34fb";
@@ -31,27 +30,8 @@ public interface UUIDs {
 
     String CHAR_SENSOR = "00000001-0000-3512-2118-0009af100700";
 
-    String SERVICE_ALERT = String.format(BASE, "1802");
-    String SERVICE_ALERT_NOTIFICATION = String.format(BASE, "1811");
-    String SERVICE_DEVICE_INFO = String.format(BASE, "180a");
-
-
-
-    String CHAR_HZ = "00000002-0000-3512-2118-0009af100700";
-    String CHAR_ALERT = "00002a06-0000-1000-8000-00805f9b34fb";
     String CHAR_BATTERY = "00000006-0000-3512-2118-0009af100700";
     String CHAR_STEPS = "00000007-0000-3512-2118-0009af100700";
-    String CHAR_LE_PARAMS = String.format(BASE, "FF09");
-    int CHAR_REVISION = 0x2a28;
-    int CHAR_SERIAL = 0x2a25;
-    int CHAR_HRDW_REVISION = 0x2a27;
-    String CHAR_CONFIGURATION = "00000003-0000-3512-2118-0009af100700";
-    String CHAR_DEVICEEVENT = "00000010-0000-3512-2118-0009af100700";
-
-    String CHAR_CURRENT_TIME = String.format(BASE, "2A2B");
-    String CHAR_AGE = String.format(BASE, "2A80");
-    String CHAR_USER_SETTINGS = "00000008-0000-3512-2118-0009af100700";
-
-
+    String CHAR_CURRENT_TIME = "00002A2B-0000-1000-8000-00805f9b34fb";
 
 }

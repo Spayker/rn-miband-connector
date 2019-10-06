@@ -1,4 +1,4 @@
-package com.sbp.metric;
+package com.sbp.info;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -16,11 +16,11 @@ import javax.annotation.Nonnull;
  *
  * @author  Spayker
  * @version 1.0
- * @since   06/01/2019
+ * @since   10/06/2019
  */
-public class HeartBeatMeasurerPackage implements ReactPackage {
+public class InfoPackage implements ReactPackage {
 
-    private HeartBeatMeasurer heartBeatMeasurer;
+    private InfoReceiver infoReceiver;
 
     @Nonnull
     @Override
@@ -32,17 +32,17 @@ public class HeartBeatMeasurerPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(initHeartBeatMeasurer(reactContext));
+        modules.add(initInfoMeasurer(reactContext));
         return modules;
     }
 
-    private HeartBeatMeasurer initHeartBeatMeasurer(ReactApplicationContext reactContext){
-        heartBeatMeasurer = new HeartBeatMeasurer(reactContext);
-        return heartBeatMeasurer;
+    private InfoReceiver initInfoMeasurer(ReactApplicationContext reactContext){
+        infoReceiver = new InfoReceiver(reactContext);
+        return infoReceiver;
     }
 
-    public HeartBeatMeasurer getHeartBeatMeasurer() {
-        return heartBeatMeasurer;
+    public InfoReceiver getInfoReceiver() {
+        return infoReceiver;
     }
 
 
