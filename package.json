@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
+    "stop": "killall node",
     "test": "jest",
     "lint": "eslint ."
   },
