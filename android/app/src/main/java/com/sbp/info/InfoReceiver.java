@@ -25,8 +25,6 @@ import static com.sbp.common.UUIDs.SERVICE1;
  */
 public class InfoReceiver extends ReactContextBaseJavaModule {
 
-    private BluetoothGattService service1;
-
     private BluetoothGattCharacteristic stepsChar;
 
     /**
@@ -49,13 +47,13 @@ public class InfoReceiver extends ReactContextBaseJavaModule {
 
     public void updateInfoChars(BluetoothGatt gatt){
         this.btGatt = gatt;
-        service1 = btGatt.getService(UUID.fromString(SERVICE1));
+        BluetoothGattService service1 = btGatt.getService(UUID.fromString(SERVICE1));
         stepsChar = service1.getCharacteristic(UUID.fromString(CHAR_STEPS));
         btGatt.readCharacteristic(stepsChar);
     }
 
     /**
-     * Returns main info from device including steps, calories battery life.
+     * Returns main info from device including steps, battery level.
      * @param successCallback - a Callback instance that contains result of native code execution
      */
     @ReactMethod
@@ -67,8 +65,8 @@ public class InfoReceiver extends ReactContextBaseJavaModule {
     }
 
     /**
-     * .
-     * @param value
+     * Updates steps variable with current step value on device side
+     * @param value - an array with step value
      *
      */
     public void handleInfoData(final byte[] value) {
@@ -79,8 +77,8 @@ public class InfoReceiver extends ReactContextBaseJavaModule {
     }
 
     /**
-     * .
-     * @param value
+     * Updates steps variable with current battery value on device side
+     * @param value - an array with battery value
      *
      */
     public void handleBatteryData(final byte[] value) {

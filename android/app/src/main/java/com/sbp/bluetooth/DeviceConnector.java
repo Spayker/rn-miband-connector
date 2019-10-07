@@ -9,7 +9,6 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,14 +17,9 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.sbp.R;
 import com.sbp.common.GattCallback;
 import com.sbp.metric.hr.HeartBeatMeasurer;
 import com.sbp.metric.hr.HeartBeatMeasurerPackage;
-
-import java.util.ArrayList;
-import java.util.Objects;
-
 import javax.annotation.Nonnull;
 
 import static android.content.Context.BLUETOOTH_SERVICE;
@@ -67,8 +61,9 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
     @ReactMethod
     public void enableBTAndDiscover(Callback successCallback) {
         Context mainContext = getReactApplicationContext().getCurrentActivity();
-        bluetoothAdapter = ((BluetoothManager) mainContext.
-                getSystemService(BLUETOOTH_SERVICE)).getAdapter();
+        bluetoothAdapter = ((BluetoothManager) mainContext
+                .getSystemService(BLUETOOTH_SERVICE))
+                .getAdapter();
 
         searchProgressDialog = new ProgressDialog(mainContext);
         searchProgressDialog.setIndeterminate(true);
@@ -78,8 +73,8 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
         searchProgressDialog.show();
 
         if (!bluetoothAdapter.isEnabled()) {
-            ((AppCompatActivity)mainContext).
-                    startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+            ((AppCompatActivity)mainContext)
+                    .startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
                             1);
         }
 

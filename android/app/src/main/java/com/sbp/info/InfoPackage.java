@@ -12,7 +12,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- *  Inits package responsible for HB measurement
+ *  Inits package responsible for general info gathering
  *
  * @author  Spayker
  * @version 1.0

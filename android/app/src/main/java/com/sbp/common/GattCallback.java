@@ -20,11 +20,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import static com.sbp.common.ModuleStorage.getModuleStorage;
 import static com.sbp.common.UUIDs.AUTH_CHAR_KEY;
-import static com.sbp.common.UUIDs.CHAR_ACTIVITY_DATA;
 import static com.sbp.common.UUIDs.CHAR_AUTH;
 import static com.sbp.common.UUIDs.CHAR_BATTERY;
-import static com.sbp.common.UUIDs.CHAR_CURRENT_TIME;
-import static com.sbp.common.UUIDs.CHAR_FETCH;
 import static com.sbp.common.UUIDs.CHAR_HEART_RATE_CONTROL;
 import static com.sbp.common.UUIDs.CHAR_HEART_RATE_MEASURE;
 import static com.sbp.common.UUIDs.CHAR_SENSOR;
@@ -43,25 +40,15 @@ import static com.sbp.common.UUIDs.SERVICE_HEART_RATE;
  */
 public class GattCallback extends BluetoothGattCallback {
 
-    private final String CIPHER_NAME = "AES";
-    private final String CIPHER_TYPE = "AES/ECB/NoPadding";
-
     private HeartBeatMeasurer heartBeatMeasurer;
     private InfoReceiver infoReceiver;
-
-    private BluetoothGattService service1;
-    private BluetoothGattService service2;
-    private BluetoothGattService heartService;
 
     private BluetoothGattCharacteristic authChar;
     private BluetoothGattDescriptor authDesc;
 
     private BluetoothGattCharacteristic hrCtrlChar;
-    private BluetoothGattCharacteristic hrMeasureChar;
     private BluetoothGattDescriptor hrDescChar;
     private BluetoothGattCharacteristic batteryChar;
-
-
 
     public GattCallback(HeartBeatMeasurer heartBeatMeasurer){
         this.heartBeatMeasurer = heartBeatMeasurer;
@@ -89,13 +76,13 @@ public class GattCallback extends BluetoothGattCallback {
     }
 
     private void init(BluetoothGatt gatt) {
-        service1 = gatt.getService(UUID.fromString(SERVICE1));
-        service2 = gatt.getService(UUID.fromString(SERVICE2));
-        heartService = gatt.getService(UUID.fromString(SERVICE_HEART_RATE));
+        BluetoothGattService service1 = gatt.getService(UUID.fromString(SERVICE1));
+        BluetoothGattService service2 = gatt.getService(UUID.fromString(SERVICE2));
+        BluetoothGattService heartService = gatt.getService(UUID.fromString(SERVICE_HEART_RATE));
 
         authChar = service2.getCharacteristic(UUID.fromString(CHAR_AUTH));
         hrCtrlChar = heartService.getCharacteristic(UUID.fromString(CHAR_HEART_RATE_CONTROL));
-        hrMeasureChar = heartService.getCharacteristic(UUID.fromString(CHAR_HEART_RATE_MEASURE));
+        BluetoothGattCharacteristic hrMeasureChar = heartService.getCharacteristic(UUID.fromString(CHAR_HEART_RATE_MEASURE));
         batteryChar = service1.getCharacteristic(UUID.fromString(CHAR_BATTERY));
         hrDescChar = hrMeasureChar.getDescriptor(UUID.fromString(NOTIFICATION_DESC));
         authDesc = authChar.getDescriptor(UUID.fromString(NOTIFICATION_DESC));
@@ -115,7 +102,6 @@ public class GattCallback extends BluetoothGattCallback {
                 + " value: " + Arrays.toString(characteristic.getValue()));
 
         byte[] charValue = Arrays.copyOfRange(characteristic.getValue(), 0, 3);
-
         switch (characteristic.getUuid().toString()){
             case CHAR_AUTH:{
                 switch (Arrays.toString(charValue)){
@@ -130,7 +116,7 @@ public class GattCallback extends BluetoothGattCallback {
                         break;
                     }
                     case "[16, 3, 1]":{
-                        Log.d("INFO", "Authentication has been passed successfully"); // 6
+                        Log.d("INFO", "Authentication has been passed successfully"); // 7
                         ModuleStorage moduleStorage = getModuleStorage();
                         heartBeatMeasurer = moduleStorage.getHeartBeatMeasurerPackage().getHeartBeatMeasurer();
                         heartBeatMeasurer.updateHrChars(gatt);
@@ -213,8 +199,10 @@ public class GattCallback extends BluetoothGattCallback {
         } else if (value[0] == 16 && value[1] == 2 && value[2] == 1) {
             try {
                 byte[] tmpValue = Arrays.copyOfRange(value, 3, 19);
+                String CIPHER_TYPE = "AES/ECB/NoPadding";
                 Cipher cipher = Cipher.getInstance(CIPHER_TYPE);
 
+                String CIPHER_NAME = "AES";
                 SecretKeySpec key = new SecretKeySpec(AUTH_CHAR_KEY, CIPHER_NAME);
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 byte[] bytes = cipher.doFinal(tmpValue);

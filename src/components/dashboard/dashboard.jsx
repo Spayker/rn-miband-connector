@@ -34,6 +34,8 @@ export default class Dashboard extends React.Component {
         clearInterval(this.state.bluetoothSearchInterval)
         this.setState({ bluetoothSearchInterval: null})
         this.setState({ deviceBondLevel: 0})
+        this.setState({ steps: 0})
+        this.setState({ battery: 0})
         this.setState({ isConnectedWithMiBand: false})
     }
 
