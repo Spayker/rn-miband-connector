@@ -2,7 +2,8 @@ package com.sbp.common;
 
 import com.facebook.react.shell.MainReactPackage;
 import com.sbp.bluetooth.DeviceConnectorPackage;
-import com.sbp.metric.HeartBeatMeasurerPackage;
+import com.sbp.info.InfoPackage;
+import com.sbp.metric.hr.HeartBeatMeasurerPackage;
 
 /**
  *  An utility class that registers native modules in app
@@ -21,10 +22,13 @@ public class ModuleStorage {
 
     private HeartBeatMeasurerPackage heartBeatMeasurerPackage;
 
+    private InfoPackage infoPackage;
+
     private ModuleStorage(){
         mainReactPackage = new MainReactPackage();
         deviceConnectorPackage = new DeviceConnectorPackage();
         heartBeatMeasurerPackage = new HeartBeatMeasurerPackage();
+        infoPackage = new InfoPackage();
     }
 
     public static ModuleStorage getModuleStorage(){
@@ -44,5 +48,9 @@ public class ModuleStorage {
 
     public HeartBeatMeasurerPackage getHeartBeatMeasurerPackage() {
         return heartBeatMeasurerPackage;
+    }
+
+    public InfoPackage getInfoPackage() {
+        return infoPackage;
     }
 }

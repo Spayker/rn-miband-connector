@@ -1,4 +1,4 @@
-package com.sbp.bluetooth;
+package com.sbp.info;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
@@ -12,15 +12,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * Inits package responsible for miband device connector.
+ *  Inits package responsible for general info gathering
  *
  * @author  Spayker
  * @version 1.0
- * @since   06/01/2019
+ * @since   10/06/2019
  */
-public class DeviceConnectorPackage implements ReactPackage {
+public class InfoPackage implements ReactPackage {
 
-    private DeviceConnector deviceConnector;
+    private InfoReceiver infoReceiver;
 
     @Nonnull
     @Override
@@ -30,19 +30,20 @@ public class DeviceConnectorPackage implements ReactPackage {
 
     @Nonnull
     @Override
-    public List<NativeModule> createNativeModules(
-            ReactApplicationContext reactContext) {
+    public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(initDeviceConnector(reactContext));
+        modules.add(initInfoMeasurer(reactContext));
         return modules;
     }
 
-    private DeviceConnector initDeviceConnector(ReactApplicationContext reactContext){
-        deviceConnector = new DeviceConnector(reactContext);
-        return deviceConnector;
+    private InfoReceiver initInfoMeasurer(ReactApplicationContext reactContext){
+        infoReceiver = new InfoReceiver(reactContext);
+        return infoReceiver;
     }
 
-    public DeviceConnector getDeviceConnector() {
-        return deviceConnector;
+    public InfoReceiver getInfoReceiver() {
+        return infoReceiver;
     }
+
+
 }

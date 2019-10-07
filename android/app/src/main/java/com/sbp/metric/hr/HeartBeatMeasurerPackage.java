@@ -1,4 +1,4 @@
-package com.sbp.metric;
+package com.sbp.metric.hr;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
