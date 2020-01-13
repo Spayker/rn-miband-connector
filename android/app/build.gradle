@@ -188,8 +188,9 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.facebook.react:react-native:0.60.5"  // From node_modules
+    implementation "com.facebook.react:react-native:0.61.2"  // From node_modules
     implementation 'org.apache.commons:commons-lang3:3.6'
 
     if (enableHermes) {

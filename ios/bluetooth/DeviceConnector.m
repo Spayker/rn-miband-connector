@@ -7,7 +7,3 @@
   RCT_EXTERN_METHOD(getDeviceBondLevel: (RCTResponseSenderBlock)callback)
 
 @end
-
-
-
-

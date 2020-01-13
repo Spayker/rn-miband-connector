@@ -25,7 +25,7 @@ public class DeviceScanCallback extends ScanCallback {
         if (deviceName != null && deviceName.equalsIgnoreCase(
                 Objects.requireNonNull(
                         deviceConnector.getApplicationContext())
-                        .getString(R.string.mi_band_device_name))){
+                        .getString(R.string.mi_band_device_name_3))){
             Log.d("TAG", "Device found " + result.getDevice().getAddress() +
                     " " + deviceName);
             deviceConnector.setBluetoothDevice(result.getDevice());

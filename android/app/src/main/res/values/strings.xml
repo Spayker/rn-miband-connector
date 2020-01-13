@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">sbp</string>
-    <string name="mi_band_device_name">Mi Band 3</string>
+    <string name="mi_band_device_name_3">Mi Band 3</string>
+    <string name="mi_band_device_name_4">Mi Smart Band 4</string>
     <string name="app_mi_band_connect_preferences">MiBandConnectPreferences</string>
     <string name="app_mi_band_last_connected_device_mac_address_key">lastMiBandConnectedDeviceMacAddress</string>
 </resources>
