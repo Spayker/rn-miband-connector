@@ -3,6 +3,7 @@ import {View} from 'react-native';
 import BottomNavigation, { FullTab } from 'react-native-material-bottom-navigation'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BandConnector from '../tab/band_connector/index.js';
+import Account from '../tab/account/index.js';
 import ServerShare from '../tab/server_share/index.js';
 import styles from "./styles.jsx";
 
@@ -17,6 +18,13 @@ export default class Dashboard extends React.Component {
             key: 'band',
             icon: 'watch',
             label: 'Band',
+            barColor: '#040d14',
+            pressColor: '#2979ff'
+        },
+        {
+            key: 'account',
+            icon: 'account',
+            label: 'Account',
             barColor: '#040d14',
             pressColor: '#2979ff'
         },
@@ -47,6 +55,7 @@ export default class Dashboard extends React.Component {
             <View style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>            
                     { this.state.activeTab == 'band' && <BandConnector/> }
+                    { this.state.activeTab == 'account' && <Account/> }
                     { this.state.activeTab == 'share' && <ServerShare/> }
                 </View>
                 <BottomNavigation
