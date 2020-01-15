@@ -7,12 +7,23 @@ export default class Account extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-        
+            accountName: "",
+            password: ""
         }
     }
 
-    saveProfile(){
-        console.log('Profile has been signed up...')
+    signUp = () => {
+        return fetch('http://192.168.0.101:6000/accounts/', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username: 'spayker',
+              password: 'qwerty',
+            }),
+        });
     }
 
     render() {
@@ -32,18 +43,22 @@ export default class Account extends React.Component {
                     <TextInput
                         style={styles.dataInputText}
                         editable={true}
-                        placeholder='Your Name'
+                        placeholder='Enter Your Name'
                         name="name"
                         type="name"
-                        id="name"/>
+                        id="name"
+                        value={this.state.name}
+                        onChangeText={(name) => this.setState({name})}/>
 
                     <TextInput
                         style={styles.dataInputText}
                         editable={true}
-                        placeholder='Your Password'
+                        placeholder='Enter Your Password'
                         name="password"
                         type="password"
-                        id="password"/>
+                        id="password"
+                        value={this.state.password}
+                        onChangeText={(password) => this.setState({password})}/>
 
                 </View>
 
