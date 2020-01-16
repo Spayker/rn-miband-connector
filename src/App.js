@@ -1,5 +1,5 @@
 import React from 'react';
-import Dashboard from './components/dashboard/index.js';
+import Dashboard from './components/dashboard/dashboard.jsx';
 
 console.disableYellowBox = true;
 

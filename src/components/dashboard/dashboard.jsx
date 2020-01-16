@@ -2,9 +2,9 @@ import React from 'react'
 import {View} from 'react-native';
 import BottomNavigation, { FullTab } from 'react-native-material-bottom-navigation'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import BandConnector from '../tab/band_connector/index.js';
-import Account from '../tab/account/index.js';
-import ServerShare from '../tab/server_share/index.js';
+import BandConnector from '../tab/band_connector/bandConnector.jsx';
+import Account from '../tab/account/account.jsx';
+import ServerShare from '../tab/server_share/serverShare.jsx';
 import styles from "./styles.jsx";
 
 export default class Dashboard extends React.Component {
