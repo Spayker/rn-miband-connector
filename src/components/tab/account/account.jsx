@@ -7,7 +7,7 @@ export default class Account extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            accountName: "",
+            username: "",
             password: ""
         }
     }
@@ -20,8 +20,8 @@ export default class Account extends React.Component {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              username: 'spayker',
-              password: 'qwerty',
+              username: this.state.username,
+              password: this.state.password
             }),
         });
     }
@@ -46,9 +46,9 @@ export default class Account extends React.Component {
                         placeholder='Enter Your Name'
                         name="name"
                         type="name"
-                        id="name"
-                        value={this.state.name}
-                        onChangeText={(name) => this.setState({name})}/>
+                        id="username"
+                        value={this.state.username}
+                        onChangeText={(username) => this.setState({username})}/>
 
                     <TextInput
                         style={styles.dataInputText}
