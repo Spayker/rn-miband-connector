@@ -1,6 +1,6 @@
 import React from 'react'
 import {Text, View, TouchableOpacity} from 'react-native';
-import DataScreen from '../../common/dataScreen/index.js';
+import DataScreen from '../../common/dataScreen/dataScreen.jsx';
 import styles from "./styles.jsx";
 
 export default class ServerShare extends React.Component {

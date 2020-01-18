@@ -1,6 +1,6 @@
 import React from 'react'
 import {Text, View, NativeModules, TouchableOpacity} from 'react-native';
-import DataScreen from '../../common/dataScreen/index.js';
+import DataScreen from '../../common/dataScreen/dataScreen.jsx';
 import styles from "./styles.jsx";
 
 export default class Bandconnector extends React.Component {
