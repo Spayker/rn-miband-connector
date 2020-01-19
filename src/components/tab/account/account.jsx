@@ -1,5 +1,6 @@
 import React from 'react'
 import {Button, View, Image, TextInput, Text} from 'react-native';
+import AccountRequests from "../../common/rest/accountRequests.jsx"
 import globals from "../../common/globals.jsx";
 import {AsyncStorage} from 'react-native';
 import styles from "./styles.jsx";
@@ -12,86 +13,29 @@ export default class Account extends React.Component {
             username: 'spayker',
             password: 'qwerty',
             userToken: '',
-            status: 'unauthorized'
+            status: globals.UNAUTHORIZED_STATE
         }
+        accountRequestsObj = new AccountRequests();
     }
 
-    signUp = () => {
-        console.log(globals.SERVER_ACCOUNT_URL_ADDRESS)
-        return fetch('http://' + globals.SERVER_ACCOUNT_URL_ADDRESS + '/accounts/', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                        'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: this.state.username,
-                password: this.state.password
-            }),
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            console.log(responseJson)
-            this.getAccessToken()
-        })
-        .catch((error) => { 
-            console.error(error)
-            this.getAccessToken() 
-        });
+    signUpUser = () => {
+        accountRequestsObj.signUp(this.state.username, this.state.password)
+        this.updateAuthStatus()
     }
 
-    getAccessToken = () => {
-        var details = {
-            "scope": "ui",
-            "username": this.state.username,
-            "password": this.state.password,
-            "grant_type": "client_credentials"
-        };
-        
-        var formBody = [];
-        for (var property in details) {
-          var encodedKey = encodeURIComponent(property);
-          var encodedValue = encodeURIComponent(details[property]);
-          formBody.push(encodedKey + "=" + encodedValue);
-        }
-        formBody = formBody.join("&");
-
-        return fetch('http://' + globals.SERVER_AUTH_URL_ADDRESS + '/mservicet/oauth/token', {
-            method: 'POST',
-            headers: {
-                Authorization: "Basic YnJvd3Nlcjo=",
-                Accept: "*/*", 
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: formBody
-        })
-        .then((response) => response.json())
-        .then((responseJson) => {
-            this.setState({userToken: responseJson.access_token})
-            this.setState({status: 'authorized'})
-            console.log(this.state.userToken)
-            this._storeData()
-
-        })
-        .catch((error) => { 
-            this._storeData()
-            console.error(error)
-        });
-    }
-
-    _storeData = async () => {
+    updateAuthStatus = async () => {
         try {
-            console.log('username111: ' + this.state.username)
-            let multiDataSet = [
-                [globals.ACCESS_TOKEN_KEY, this.state.userToken],
-                [globals.USERNAME_TOKEN_KEY, this.state.username],
-            ];
-
-            await AsyncStorage.multiSet(multiDataSet);
+            const accessToken = await AsyncStorage.getItem(globals.ACCESS_TOKEN_KEY);
+            
+            if (accessToken !== null) {
+                this.setState({status: globals.AUTHORIZED_STATE})
+            } else {
+                this.setState({status: globals.UNAUTHORIZED_STATE})
+            }
         } catch (error) {
-            console.log('couldn\'t save user access token to storage...')
+            console.log(error)
         }
-    };
+    }
 
     render() {
         return (
@@ -127,9 +71,7 @@ export default class Account extends React.Component {
                         onChangeText={(password) => this.setState({password})}/>
                 </View>
 
-                <Button style={styles.saveButton} title='Sign Up' onPress={() => {
-                    this.signUp()
-                }}/>
+                <Button style={styles.saveButton} title='Sign Up' onPress={() => { this.signUpUser() }}/>
 
             </View>
         )}
