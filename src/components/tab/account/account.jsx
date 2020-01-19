@@ -1,6 +1,7 @@
 import React from 'react'
 import {Button, View, Image, TextInput, Text} from 'react-native';
 import globals from "../../common/globals.jsx";
+import {AsyncStorage} from 'react-native';
 import styles from "./styles.jsx";
 
 export default class Account extends React.Component {
@@ -8,7 +9,7 @@ export default class Account extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            username: 'Spayker',
+            username: 'current user',
             password: 'qwerty',
             userToken: '',
             status: 'unauthorized'
@@ -37,11 +38,6 @@ export default class Account extends React.Component {
     }
 
     getAccessToken = () => {
-        console.log(globals.SERVER_AUTH_URL_ADDRESS)
-        console.log(this.state.username)
-        console.log(this.state.password)
-
-
         var details = {
             "scope": "ui",
             "username": this.state.username,
@@ -71,16 +67,26 @@ export default class Account extends React.Component {
             this.setState({userToken: responseJson.access_token})
             this.setState({status: 'authorized'})
             console.log(this.state.userToken)
+            this._storeData()
+
         })
         .catch((error) => { console.error(error) });
     }
+
+    _storeData = async () => {
+        try {
+          await AsyncStorage.setItem(globals.ACCESS_TOKEN_KEY, this.state.userToken);
+        } catch (error) {
+            console.log('couldn\'t save user access token to storage...')
+        }
+    };
 
     render() {
         return (
             <View style={styles.container}>
 
                 <View style={styles.editPhotoPackage}>
-                    <Image style={styles.image} source={require('../../../resources/galaxy_scaled.png')} />
+                    <Image style={styles.image} source={require('../../../resources/account.png')} />
                     <Text style={styles.contentTextHeader}>{this.state.username}</Text>
                     <Text style={styles.textHeaderDescription}>{this.state.status}</Text>
                 </View>
@@ -94,6 +100,7 @@ export default class Account extends React.Component {
                         name="name"
                         type="name"
                         id="username"
+                        value="spayker"
                         onChangeText={(username) => this.setState({username})}/>
 
                     <TextInput
