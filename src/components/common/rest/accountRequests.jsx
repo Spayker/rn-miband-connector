@@ -5,7 +5,6 @@ import {AsyncStorage} from 'react-native';
 export default class AccountRequests extends React.Component {
 
     signUp = (username, password) => {
-        console.log(globals.SERVER_ACCOUNT_URL_ADDRESS)
         return fetch('http://' + globals.SERVER_ACCOUNT_URL_ADDRESS + '/accounts/', {
             method: 'POST',
             headers: {
@@ -15,16 +14,14 @@ export default class AccountRequests extends React.Component {
             body: JSON.stringify({
                 username: username,
                 password: password
-            }),
+            })
         })
         .then((response) => response.json())
         .then((responseJson) => {
             console.log(responseJson)
             this.getAccessToken(username, password)
         })
-        .catch((error) => { 
-            console.error(error)
-        });
+        .catch((error) => { console.error(error) });
     }
 
     getAccessToken = (username, password) => {
@@ -53,12 +50,8 @@ export default class AccountRequests extends React.Component {
             body: formBody
         })
         .then((response) => response.json())
-        .then((responseJson) => {
-            this.storeData(responseJson.access_token, username)
-        })
-        .catch((error) => { 
-            console.error(error)
-        });
+        .then((responseJson) => { this.storeData(responseJson.access_token, username) })
+        .catch((error) => { console.error(error) });
     }
 
     storeData = async (userToken, username) => {
@@ -68,8 +61,6 @@ export default class AccountRequests extends React.Component {
                 [globals.USERNAME_TOKEN_KEY, username],
             ];
             await AsyncStorage.multiSet(multiDataSet);
-        } catch (error) {
-            console.log('couldn\'t save user access token to storage because of: ' + error)
-        }
+        } catch (error) { console.log('couldn\'t save user access token to storage because of: ' + error) }
     };
 }

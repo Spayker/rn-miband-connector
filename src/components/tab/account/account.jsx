@@ -15,10 +15,10 @@ export default class Account extends React.Component {
             userToken: '',
             status: globals.UNAUTHORIZED_STATE
         }
-        accountRequestsObj = new AccountRequests();
     }
 
     signUpUser = () => {
+        accountRequestsObj = new AccountRequests();
         accountRequestsObj.signUp(this.state.username, this.state.password)
         this.updateAuthStatus()
     }
