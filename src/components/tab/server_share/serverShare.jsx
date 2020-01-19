@@ -15,24 +15,73 @@ export default class ServerShare extends React.Component {
             storedSteps: 0,
             storedBattery: 0,
             userToken: '',
+            username: '',
+            deviceId: '123412342999'
         };
     }
 
     shareDeviceData = () => {
-        console.log('share userToken: ' + this.state.userToken);
+        console.log('userToken: ' + this.state.userToken)
+        console.log('username: ' + this.state.username)
+        this.registerDevice()
+        this.sendDeviceData()
+    }
+
+    registerDevice = () => {
+        return fetch('http://' + globals.SERVER_DEVICE_URL_ADDRESS + '/devices/', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.userToken
+            },
+            body: JSON.stringify({
+                username: this.state.username,
+                deviceId: this.state.deviceId
+            }),
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            console.log(responseJson)
+        })
+        .catch((error) => { console.error(error) });
+    }
+
+    sendDeviceData = () => {
+        return fetch('http://' + globals.SERVER_DEVICE_URL_ADDRESS + '/devices/', {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.state.userToken
+            },
+            body: JSON.stringify({
+                deviceId:   this.state.deviceId,
+                username:   this.state.username,
+                date:       new Date().getDate(),
+                hrData:     this.state.storedHeartBeatRate,
+            }),
+        })
+        .catch((error) => { console.error(error) });
     }
 
     componentDidMount(){
-        this._updateStateByAsyncStorage()
+        this.updateStateByAsyncStorage()
     }
 
-    _updateStateByAsyncStorage = async () => {
+    updateStateByAsyncStorage = async () => {
         try {
-          const value = await AsyncStorage.getItem(globals.ACCESS_TOKEN_KEY);
-          if (value !== null) {
-            this.setState({userToken: value})
-            console.log('received userToken: ' + this.state.userToken);
+          const accessToken = await AsyncStorage.getItem(globals.ACCESS_TOKEN_KEY);
+          const username = await AsyncStorage.getItem(globals.USERNAME_TOKEN_KEY);
+
+          console.log('userToken: ' + accessToken)
+          console.log('username: ' + username)
+          
+          if (accessToken !== null && username !== null) {
+            this.setState({userToken: accessToken})
+            this.setState({username: username})
           }
+
         } catch (error) {
             console.log(error)
         }

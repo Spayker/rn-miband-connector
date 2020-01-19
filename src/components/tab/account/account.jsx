@@ -9,7 +9,7 @@ export default class Account extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            username: 'current user',
+            username: 'spayker',
             password: 'qwerty',
             userToken: '',
             status: 'unauthorized'
@@ -34,7 +34,10 @@ export default class Account extends React.Component {
             console.log(responseJson)
             this.getAccessToken()
         })
-        .catch((error) => { console.error(error) });
+        .catch((error) => { 
+            console.error(error)
+            this.getAccessToken() 
+        });
     }
 
     getAccessToken = () => {
@@ -70,12 +73,21 @@ export default class Account extends React.Component {
             this._storeData()
 
         })
-        .catch((error) => { console.error(error) });
+        .catch((error) => { 
+            this._storeData()
+            console.error(error)
+        });
     }
 
     _storeData = async () => {
         try {
-          await AsyncStorage.setItem(globals.ACCESS_TOKEN_KEY, this.state.userToken);
+            console.log('username111: ' + this.state.username)
+            let multiDataSet = [
+                [globals.ACCESS_TOKEN_KEY, this.state.userToken],
+                [globals.USERNAME_TOKEN_KEY, this.state.username],
+            ];
+
+            await AsyncStorage.multiSet(multiDataSet);
         } catch (error) {
             console.log('couldn\'t save user access token to storage...')
         }
@@ -100,17 +112,17 @@ export default class Account extends React.Component {
                         name="name"
                         type="name"
                         id="username"
-                        value="spayker"
+                        value={this.state.username}
                         onChangeText={(username) => this.setState({username})}/>
 
                     <TextInput
                         style={styles.dataInputText}
                         editable={true}
+                        secureTextEntry={true}
                         placeholder='Enter Your Password'
                         name="password"
                         type="password"
                         id="password"
-                        secureTextEntry={true}
                         value={this.state.password}
                         onChangeText={(password) => this.setState({password})}/>
                 </View>
