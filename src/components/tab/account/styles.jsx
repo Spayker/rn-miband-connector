@@ -26,6 +26,19 @@ export default styles = StyleSheet.create({
         paddingBottom: 64
     },
 
+    contentTextHeader:{
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 20,
+        color: "black",
+        marginTop: 10
+    },
+
+    textHeaderDescription: {
+        fontSize: 14,
+        textAlign: "center"
+    },
+
     dataInputText:{
         fontSize: 20,
         textAlign: "left",

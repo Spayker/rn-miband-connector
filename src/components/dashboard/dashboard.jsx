@@ -10,7 +10,7 @@ import styles from "./styles.jsx";
 export default class Dashboard extends React.Component {
 
     state = {
-        activeTab: 'share'
+        activeTab: 'account'
     }
 
     tabs = [
