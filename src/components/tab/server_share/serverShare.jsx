@@ -16,7 +16,7 @@ export default class ServerShare extends React.Component {
             storedBattery: 0,
             userToken: '',
             username: '',
-            deviceId: '123412342999'
+            deviceId: ''
         };
     }
 
@@ -73,13 +73,16 @@ export default class ServerShare extends React.Component {
         try {
           const accessToken = await AsyncStorage.getItem(globals.ACCESS_TOKEN_KEY);
           const username = await AsyncStorage.getItem(globals.USERNAME_TOKEN_KEY);
+          const deviceId = await AsyncStorage.getItem(globals.DEVICE_ID_KEY);
 
           console.log('userToken: ' + accessToken)
           console.log('username: ' + username)
+          console.log('deviceId: ' + deviceId)
           
           if (accessToken !== null && username !== null) {
             this.setState({userToken: accessToken})
             this.setState({username: username})
+            this.setState({deviceId: this.state.deviceId})
           }
 
         } catch (error) {

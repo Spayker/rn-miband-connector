@@ -1,6 +1,8 @@
 import React from 'react'
 import {Text, View, NativeModules, TouchableOpacity} from 'react-native';
 import DataScreen from '../../common/dataScreen/dataScreen.jsx';
+import globals from "../../common/globals.jsx";
+import {AsyncStorage} from 'react-native';
 import styles from "./styles.jsx";
 
 export default class Bandconnector extends React.Component {
@@ -23,6 +25,8 @@ export default class Bandconnector extends React.Component {
         this.setState({ isConnectedWithMiBand: true})
         NativeModules.DeviceConnector.enableBTAndDiscover( (error, deviceBondLevel) => {
             this.setState({ deviceBondLevel: deviceBondLevel})
+            //toDo: get real deviceId instead of what's transferring to storage below...
+            AsyncStorage.setItem(globals.DEVICE_ID_KEY, (((1+Math.random())*0x10000)|0).toString(16).substring(1));
         })
         this.setState({ bluetoothSearchInterval: setInterval(this.getDeviceInfo, 5000) })
     }
