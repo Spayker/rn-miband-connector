@@ -1,6 +1,5 @@
 import React from 'react'
 import {Text, View, TouchableOpacity} from 'react-native';
-import DataScreen from '../../common/dataScreen/dataScreen.jsx';
 import DeviceRequests from "../../common/rest/deviceRequests.jsx"
 import {AsyncStorage} from 'react-native';
 import globals from "../../common/globals.jsx";
@@ -17,7 +16,8 @@ export default class ServerShare extends React.Component {
             storedBattery: 0,
             userToken: '',
             username: '',
-            deviceId: ''
+            deviceId: '',
+            serverStoredDeviceId: ''
         }
     }
 
@@ -35,38 +35,46 @@ export default class ServerShare extends React.Component {
           const username = await AsyncStorage.getItem(globals.USERNAME_TOKEN_KEY);
           const deviceId = await AsyncStorage.getItem(globals.DEVICE_ID_KEY);
 
-          console.log('userToken: ' + accessToken)
-          console.log('username: ' + username)
-          console.log('deviceId: ' + deviceId)
-          
           if (accessToken !== null && username !== null) {
             this.setState({userToken: accessToken})
             this.setState({username: username})
-            this.setState({deviceId: this.state.deviceId})
+            this.setState({deviceId: deviceId})
           }
-
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) { console.log(error) }
     };
 
     render() {
         return (
             <View style={styles.container}>
                 <View style={styles.package}>
-                    <Text style={styles.tabHeader}>Collected Data</Text>
+                    <Text style={styles.tabHeader}>Data From Server</Text>
 
-                    <DataScreen deviceBondLevel={this.state.storedDeviceBondLevel} 
-                                heartBeatRate={this.state.storedHeartBeatRate} 
-                                steps={this.state.storedSteps} 
-                                battery={this.state.storedBattery}/>
+                    <View style={styles.dataContainer}>
+                        <View style={styles.dataPackage}>
+                            <Text style={styles.dataField}>Device Id:</Text>
+                            <Text style={styles.dataField}>{this.state.serverStoredDeviceId}</Text>
+                        </View>
+                        
+                        <View style={styles.dataPackage}>
+                            <Text style={styles.dataField}>Heart Beat:</Text>
+                            <Text style={styles.dataField}>{this.state.storedHeartBeatRate + ' Bpm'}</Text>
+                        </View>
 
-                </View>
+                        <View style={styles.dataPackage}>
+                            <Text style={styles.dataField}>Steps:</Text>
+                            <Text style={styles.dataField}>{this.state.storedSteps}</Text>
+                        </View>
 
-                <View style={styles.spacing}/>
+                        <View style={styles.dataPackage}>
+                            <Text style={styles.dataField}>Battery:</Text>
+                            <Text style={styles.dataField}>{this.state.storedBattery + ' %'}</Text>
+                        </View>
 
-                <View style={styles.package}>
-                    <Text style={styles.tabHeader}>Data Transfer Status</Text>
+                        <View style={styles.dataPackage}>
+                            <Text style={styles.dataField}>Device Bond Level:</Text>
+                            <Text style={styles.dataField}>{this.state.storedDeviceBondLevel}</Text>
+                        </View>
+                    </View>
                 </View>
                 
                 <View style={styles.package}>
@@ -75,7 +83,7 @@ export default class ServerShare extends React.Component {
 
                 <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.buttonEnabled} onPress={() => {this.shareDeviceData()}}>
-                            <Text style={styles.buttonText}>Share Data</Text>
+                            <Text style={styles.buttonText}>Get Server Data</Text>
                         </TouchableOpacity>
                 </View>
             </View>

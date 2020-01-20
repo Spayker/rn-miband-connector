@@ -10,6 +10,22 @@ export default styles = StyleSheet.create({
         padding: 15
     },
 
+    dataContainer: {
+        flexDirection: "column",
+        alignContent: "center",
+        justifyContent: "center",
+        padding: 15
+    },
+    dataPackage:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        margin: 5
+    },
+    
+    dataField: {
+        fontSize: 20
+    },
+
     package:{
         flex: 1,
         flexDirection: "column",
