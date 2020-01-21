@@ -1,7 +1,7 @@
 import React from 'react'
-import {Text, View, TouchableOpacity} from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import DeviceRequests from "../../common/rest/deviceRequests.jsx"
-import {AsyncStorage} from 'react-native';
 import globals from "../../common/globals.jsx";
 import styles from "./styles.jsx";
 
@@ -14,17 +14,25 @@ export default class ServerShare extends React.Component {
             storedHeartBeatRate: 0,
             storedSteps: 0,
             storedBattery: 0,
+            storedDateTime: '',
             userToken: '',
             username: '',
-            deviceId: '',
+            deviceId: 'unknown',
             serverStoredDeviceId: ''
         }
+        deviceRequestsObj = new DeviceRequests()
     }
 
     shareDeviceData = () => {
-        deviceRequestsObj = new DeviceRequests();
         deviceRequestsObj.registerDevice(this.state.username, this.state.deviceId, this.state.userToken)
+    }
+
+    sendDataToServer = () => {
         deviceRequestsObj.sendDeviceData(this.state.username, this.state.deviceId, this.state.userToken, this.state.storedHeartBeatRate)
+    }
+
+    getServerData = () => {
+        deviceRequestsObj.getDeviceData(this.state.deviceId, this.state.userToken)
     }
 
     componentDidMount(){ this.updateStateByAsyncStorage() }
@@ -61,6 +69,11 @@ export default class ServerShare extends React.Component {
                         </View>
 
                         <View style={styles.dataPackage}>
+                            <Text style={styles.dataField}>Server Date Mark:</Text>
+                            <Text style={styles.dataField}>{this.state.storedDateTime}</Text>
+                        </View>
+
+                        <View style={styles.dataPackage}>
                             <Text style={styles.dataField}>Steps:</Text>
                             <Text style={styles.dataField}>{this.state.storedSteps}</Text>
                         </View>
@@ -83,6 +96,22 @@ export default class ServerShare extends React.Component {
 
                 <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.buttonEnabled} onPress={() => {this.shareDeviceData()}}>
+                            <Text style={styles.buttonText}>Register Device</Text>
+                        </TouchableOpacity>
+                </View>
+
+                <View style={styles.spacing}/>
+
+                <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.buttonEnabled} onPress={() => {this.sendDataToServer()}}>
+                            <Text style={styles.buttonText}>Send Data</Text>
+                        </TouchableOpacity>
+                </View>
+
+                <View style={styles.spacing}/>
+
+                <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.buttonEnabled} onPress={() => {this.getServerData()}}>
                             <Text style={styles.buttonText}>Get Server Data</Text>
                         </TouchableOpacity>
                 </View>

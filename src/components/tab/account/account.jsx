@@ -26,15 +26,13 @@ export default class Account extends React.Component {
     updateAuthStatus = async () => {
         try {
             const accessToken = await AsyncStorage.getItem(globals.ACCESS_TOKEN_KEY);
-            
+            console.log('AceesToken: ' + accessToken)
             if (accessToken !== null) {
                 this.setState({status: globals.AUTHORIZED_STATE})
             } else {
                 this.setState({status: globals.UNAUTHORIZED_STATE})
             }
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) { console.log(error) }
     }
 
     render() {

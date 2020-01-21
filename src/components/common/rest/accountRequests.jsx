@@ -5,6 +5,7 @@ import {AsyncStorage} from 'react-native';
 export default class AccountRequests extends React.Component {
 
     signUp = (username, password) => {
+        console.log('Account signUp: ' + username + ' ' + password)
         return fetch('http://' + globals.SERVER_ACCOUNT_URL_ADDRESS + '/accounts/', {
             method: 'POST',
             headers: {
@@ -18,13 +19,14 @@ export default class AccountRequests extends React.Component {
         })
         .then((response) => response.json())
         .then((responseJson) => {
-            console.log(responseJson)
+            console.log('account signUp: ' + responseJson)
             this.getAccessToken(username, password)
         })
         .catch((error) => { console.error(error) });
     }
 
     getAccessToken = (username, password) => {
+        console.log('Account getAccessToken: ' + username + ' ' + password)
         var details = {
             "scope": "ui",
             "username": username,
@@ -50,7 +52,10 @@ export default class AccountRequests extends React.Component {
             body: formBody
         })
         .then((response) => response.json())
-        .then((responseJson) => { this.storeData(responseJson.access_token, username) })
+        .then((responseJson) => { 
+            console.log('account getAccessToken: ' + responseJson)
+            this.storeData(responseJson.access_token, username) 
+        })
         .catch((error) => { console.error(error) });
     }
 
