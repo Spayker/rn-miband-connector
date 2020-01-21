@@ -32,7 +32,10 @@ export default class ServerShare extends React.Component {
     }
 
     getServerData = () => {
-        deviceRequestsObj.getDeviceData(this.state.deviceId, this.state.userToken)
+        deviceRequestsObj.getDeviceData(this.state.deviceId, this.state.userToken, ((data) => {
+            this.setState({serverStoredDeviceId: data.deviceId})
+            this.setState({storedHeartBeatRate: data.hrData})
+        }))
     }
 
     componentDidMount(){ this.updateStateByAsyncStorage() }
