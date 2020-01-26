@@ -1,4 +1,4 @@
-[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Spayker/rn-miband-connector/blob/master/LICENSE)  
+[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Spayker/rn-miband-connector/blob/master/LICENSE) [![Build Status](https://travis-ci.org/Spayker/rn-miband-connector.svg?branch=master)](https://travis-ci.org/Spayker/rn-miband-connector) [![codecov.io](https://codecov.io/github/Spayker/rn-miband-connector/coverage.svg?branch=master)](https://codecov.io/github/Spayker/rn-miband-connector?branch=master) [![Gitter](https://badges.gitter.im/rn-miband-connector/community.svg)](https://gitter.im/rn-miband-connector/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 # rn-miband-connector
 
