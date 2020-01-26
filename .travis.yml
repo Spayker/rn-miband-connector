@@ -1,27 +1,19 @@
-matrix:
-  include:
-    - name: "Android"
-      language: android
-      sudo: required
-      jdk: oraclejdk8
-      before_cache:
-        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-        - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
-      cache:
-        directories:
-          - $HOME/.yarn-cache
-          - $HOME/.gradle/caches/
-          - $HOME/.gradle/wrapper/
-      before_install:
-        - sudo apt-get install ant-optional
-        - nvm install 8
-        - echo yes | sdkmanager "platforms;android-21"
-      android:
-        components:
-          - tools
-          - platform-tools
-          - build-tools-28.0.3
-          - tools
-      env: LANE='android'
-      after_success:
-        - bash <(curl -s https://codecov.io/bash)
+language: android
+before_install: #1.1
+- nvm install 6
+- node --version
+install: #1.2
+- npm install
+android: #1.3
+  components:
+  - build-tools-28.0.3
+  - android-28
+  - extra-android-m2repository
+  - extra-google-google_play_services
+  - extra-google-m2repository
+  - addon-google_apis-google-16
+script: 
+- npm run ci #2
+- cd android && ./gradlew assembleRelease #3
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
