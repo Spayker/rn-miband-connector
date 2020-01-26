@@ -13,7 +13,7 @@ android: #1.3
   - extra-google-m2repository
   - addon-google_apis-google-16
 script: 
-- npm run ci #2
+- npm run start #2
 - cd android && ./gradlew assembleRelease #3
 after_success:
   - bash <(curl -s https://codecov.io/bash)
