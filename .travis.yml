@@ -1,0 +1,19 @@
+matrix:
+  include:
+    - language: android
+      android:
+        components:
+          - tools
+          - platform-tools
+      sudo: true
+      before_install:
+        - echo "android before_install"
+      install:
+        - echo "android install"
+      script:
+        - echo "android script"
+    - if: branch = master
+      language: node_js
+      node_js: lts/*
+      install: true
+      script: echo "MASTER BRANCH"
