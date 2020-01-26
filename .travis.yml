@@ -17,3 +17,6 @@ matrix:
       node_js: lts/*
       install: true
       script: echo "MASTER BRANCH"
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
