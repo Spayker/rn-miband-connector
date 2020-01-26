@@ -1,21 +1,34 @@
 matrix:
   include:
-    - language: android
+    - name: "Android"
+      language: android
+      sudo: required
+      jdk: oraclejdk8
+      before_cache:
+        - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+        - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+        directories:
+          - $HOME/.yarn-cache
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+      before_install:
+        - nvm install 8
+        - .travis/before_install.sh
+        - echo yes | sdkmanager "platforms;android-21"
       android:
         components:
           - tools
           - platform-tools
-      sudo: true
-      before_install:
-        - echo "android before_install"
-      install:
-        - echo "android install"
+          - build-tools-28.0.3
+          - tools
+      env: LANE='android'
+      script: .travis/run.sh
+    
+    - name: "Deploy"
+      language: node_js
+      node_js: 8
+      script: .travis/deploy.sh
+      env: LANE='Deploy'
       after_success:
         - bash <(curl -s https://codecov.io/bash)
-      script:
-        - echo "android script"
-    - if: branch = master
-      language: node_js
-      node_js: lts/*
-      install: true
-      script: echo "MASTER BRANCH"
