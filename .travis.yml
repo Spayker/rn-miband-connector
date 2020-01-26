@@ -10,6 +10,8 @@ matrix:
         - echo "android before_install"
       install:
         - echo "android install"
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
       script:
         - echo "android script"
     - if: branch = master
@@ -17,6 +19,3 @@ matrix:
       node_js: lts/*
       install: true
       script: echo "MASTER BRANCH"
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
