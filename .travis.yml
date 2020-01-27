@@ -1,19 +1,19 @@
 language: android
 before_install:
-- nvm install 11.15.0
-- node --version
+  - nvm install 11.15.0
+  - node --version
 install:
-- npm install
+  - npm install
 android:
   components:
-  - build-tools-28.0.3
-  - android-28
-  - extra-android-m2repository
-  - extra-google-google_play_services
-  - extra-google-m2repository
-  - addon-google_apis-google-16
+    - build-tools-28.0.3
+    - android-28
+    - extra-android-m2repository
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - addon-google_apis-google-16
 script: 
-- npm test
-- cd android && ./gradlew assembleRelease
+  - npm test
+  - cd android && ./gradlew assembleRelease
 after_success:
   - bash <(curl -s https://codecov.io/bash)
