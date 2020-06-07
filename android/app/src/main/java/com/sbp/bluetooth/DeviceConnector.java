@@ -20,6 +20,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.sbp.common.GattCallback;
 import com.sbp.metric.hr.HeartBeatMeasurer;
 import com.sbp.metric.hr.HeartBeatMeasurerPackage;
+
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 
 import static android.content.Context.BLUETOOTH_SERVICE;
@@ -42,12 +45,11 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
     private GattCallback gattCallback;
     private ProgressDialog searchProgressDialog;
 
-    private Context applicationContext;
+    private String currentDeviceMacAddress;
 
     DeviceConnector(ReactApplicationContext reactContext) {
         super(reactContext);
 
-        applicationContext = getReactApplicationContext().getApplicationContext();
         HeartBeatMeasurerPackage hBMeasurerPackage = getModuleStorage().getHeartBeatMeasurerPackage();
         HeartBeatMeasurer heartBeatMeasurer = hBMeasurerPackage.getHeartBeatMeasurer();
         gattCallback = new GattCallback(heartBeatMeasurer);
@@ -59,9 +61,9 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
      *                        process to send back a result of work.
      */
     @ReactMethod
-    public void enableBTAndDiscover(Callback successCallback) {
+    public void discoverDevices(Callback successCallback) {
         Context mainContext = getReactApplicationContext().getCurrentActivity();
-        bluetoothAdapter = ((BluetoothManager) mainContext
+        bluetoothAdapter = ((BluetoothManager) Objects.requireNonNull(mainContext)
                 .getSystemService(BLUETOOTH_SERVICE))
                 .getAdapter();
 
@@ -78,41 +80,47 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
                             1);
         }
 
-        final ScanCallback deviceScanCallback = new DeviceScanCallback(this, successCallback);
+        final DeviceScanCallback deviceScanCallback = new DeviceScanCallback();
         BluetoothLeScanner bluetoothScanner = bluetoothAdapter.getBluetoothLeScanner();
         if(bluetoothScanner != null){
             bluetoothScanner.startScan(deviceScanCallback);
         }
 
-        final int DISCOVERY_TIME_DELAY_IN_MS = 120000;
+        final int DISCOVERY_TIME_DELAY_IN_MS = 15000;
         new Handler().postDelayed(() -> {
             bluetoothAdapter.getBluetoothLeScanner().stopScan(deviceScanCallback);
             searchProgressDialog.dismiss();
+            successCallback.invoke(null, deviceScanCallback.getDiscoveredDevices());
         }, DISCOVERY_TIME_DELAY_IN_MS);
+
     }
 
     /**
      * Tries to connect a found miband device with tha app. In case of succeed a bound level value
      * will be send back to be displayed on UI.
+     * @param macAddress - MAC address of a device that must be linked with app
      * @param successCallback - a Callback instance that will be needed in the end of discovering
      *                        process to send back a result of work.
      */
-    void connectDevice(Callback successCallback) {
-        Context mainContext = getReactApplicationContext().getCurrentActivity();
-        bluetoothGatt = bluetoothDevice.connectGatt(mainContext, true, gattCallback);
+    @ReactMethod
+    public void linkWithDevice(String macAddress, Callback successCallback) {
+        currentDeviceMacAddress = macAddress;
+        updateBluetoothGatt();
         getModuleStorage().getHeartBeatMeasurerPackage()
                 .getHeartBeatMeasurer()
                 .updateBluetoothConfig(bluetoothGatt);
-        getDeviceBondLevel(successCallback);
+        successCallback.invoke(null, bluetoothGatt.getDevice().getBondState());
     }
 
     @ReactMethod
     void disconnectDevice(Callback successCallback) {
-        bluetoothGatt.disconnect();
-        bluetoothGatt = null;
+        if(bluetoothGatt != null){
+            bluetoothGatt.disconnect();
+            bluetoothGatt = null;
+        }
         bluetoothDevice = null;
         bluetoothAdapter = null;
-        getDeviceBondLevel(successCallback);
+        successCallback.invoke(null, 0);
     }
 
     /**
@@ -123,7 +131,9 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
      */
     @ReactMethod
     private void getDeviceBondLevel(Callback successCallback){
-        if(bluetoothGatt != null){
+        if (bluetoothGatt == null){
+            successCallback.invoke(null, 0);
+        } else {
             successCallback.invoke(null, bluetoothGatt.getDevice().getBondState());
         }
     }
@@ -134,20 +144,22 @@ public class DeviceConnector  extends ReactContextBaseJavaModule {
         return DeviceConnector.class.getSimpleName();
     }
 
-    Context getApplicationContext() {
-        return applicationContext;
+    private void updateBluetoothGatt(){
+        Context mainContext = getReactApplicationContext().getCurrentActivity();
+        bluetoothAdapter = ((BluetoothManager) Objects.requireNonNull(mainContext)
+                .getSystemService(BLUETOOTH_SERVICE))
+                .getAdapter();
+
+        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(currentDeviceMacAddress);
+        setBluetoothDevice(device);
+        HeartBeatMeasurerPackage hBMeasurerPackage = getModuleStorage().getHeartBeatMeasurerPackage();
+        HeartBeatMeasurer heartBeatMeasurer = hBMeasurerPackage.getHeartBeatMeasurer();
+        gattCallback = new GattCallback(heartBeatMeasurer);
+        bluetoothGatt = bluetoothDevice.connectGatt(mainContext, true, gattCallback);
     }
 
     void setBluetoothDevice(BluetoothDevice bluetoothDevice) {
         this.bluetoothDevice = bluetoothDevice;
-    }
-
-    BluetoothAdapter getBluetoothAdapter() {
-        return bluetoothAdapter;
-    }
-
-    ProgressDialog getSearchProgressDialog() {
-        return searchProgressDialog;
     }
 
 }

@@ -5,11 +5,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BandConnector from '../tab/band_connector/bandConnector.jsx';
 import Account from '../tab/account/account.jsx';
 import ServerShare from '../tab/server_share/serverShare.jsx';
-import styles from "./styles.jsx";
 
 export default class Dashboard extends React.Component {
 
-    state = { activeTab: 'account' }
+    state = { activeTab: 'band' }
 
     tabs = [
         {
